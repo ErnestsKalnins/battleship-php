@@ -43,22 +43,17 @@ class Ship
         return $this->color;
     }
 
-    public function addPosition($input)
+    public function addPosition($position)
     {
-        $letter = substr($input, 0, 1);
-        $number = substr($input, 1, 1);
-
-        $inputPosition = new Position($letter, $number);
-
-        if ($this->hasPosition($inputPosition)) {
-            throw new InvalidArgumentException(sprintf("position %s already belongs to the ship", $inputPosition));
+        if ($this->hasPosition($position)) {
+            throw new InvalidArgumentException(sprintf("position %s already belongs to the ship", $position));
         }
 
-        if (!$this->isPositionValid($inputPosition)) {
-            throw new InvalidArgumentException(sprintf("position %s is not valid", $inputPosition));
+        if (!$this->isPositionValid($position)) {
+            throw new InvalidArgumentException(sprintf("position %s is not valid", $position));
         }
 
-        array_push($this->positions, $inputPosition);
+        array_push($this->positions, $position);
     }
 
     public function &getPositions()

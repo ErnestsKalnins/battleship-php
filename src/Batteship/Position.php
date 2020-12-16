@@ -49,13 +49,13 @@ class Position
         $this->isHit = true;
     }
 
-    public function isAlignedTo($position): bool
+    public function isAlignedTo($position)
     {
         return $this->row == $position->row ||
             $this->column == $position->column;
     }
 
-    public function isAdjacentTo($position): bool
+    public function isAdjacentTo($position)
     {
         return abs($this->row - $position->row) + abs(ord($this->column) - ord($position->column)) == 1;
     }

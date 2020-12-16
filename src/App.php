@@ -7,8 +7,8 @@ use Battleship\Color;
 
 class App
 {
-    private static $myFleet = array();
-    private static $enemyFleet = array();
+    private static $myFleet = [];
+    private static $enemyFleet = [];
     private static $console;
     private static $fieldMin = 5;
     private static $fieldMax = 26;
@@ -119,7 +119,6 @@ class App
         self::$console->println("Please position your fleet (Game board has size from A to " . Letter::$letters[self::$currentLines - 1] . " and 1 to " . self::$currentRows . ") :");
 
         foreach (self::$myFleet as $ship) {
-
             self::$console->println();
             printf("Please enter the positions for the %s (size: %s)", $ship->getName(), $ship->getSize());
 
@@ -127,8 +126,22 @@ class App
                 while (true) {
                     printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
                     $input = readline("");
+
+                    $inputPosition = new Position(
+                        substr($input, 0, 1),
+                        substr($input, 1, 1)
+                    );
+
+                    foreach (self::$myFleet as $validateShips) {
+                        if ($validateShips->hasPosition($inputPosition)) {
+                            printf("position %s is already assigned to a ship", $inputPosition);
+                            self::$console->println();
+                            continue 2;
+                        }
+                    }
+
                     try {
-                        $ship->addPosition($input);
+                        $ship->addPosition($inputPosition);
                         break;
                     } catch (InvalidArgumentException $ex) {
                         printf($ex->getMessage());
@@ -199,18 +212,15 @@ class App
 
                 self::$console->println();
 
-
                 $enemyFleetSunk = true;
-                foreach (self::$enemyFleet as $ship)
-                {
+                foreach (self::$enemyFleet as $ship) {
                     if (!$ship->isSunk()) {
                         $enemyFleetSunk = false;
                         break;
                     }
                 }
 
-                if ($enemyFleetSunk)
-                {
+                if ($enemyFleetSunk) {
                     self::$console->println("\nYou are the winner!");
                     self::getHappyEnding();
                     exit();
@@ -222,7 +232,12 @@ class App
                 self::$player2ShootsMatrix[$position->getColumn()][$position->getRow()] = $isHit;
                 self::drawMap(self::$player2ShootsMatrix, Color::YELLOW);
                 self::$console->println();
-                printf("Computer shoot in %s%s and %s", $position->getColumn(), $position->getRow(), $isHit ? "hit your ship !\n" : "miss");
+                printf(
+                    "Computer shoot in %s%s and %s",
+                    $position->getColumn(),
+                    $position->getRow(),
+                    $isHit ? "hit your ship !\n" : "miss"
+                );
                 if ($isHit) {
                     self::beep();
 
@@ -236,23 +251,20 @@ class App
                     self::$console->println("                   \\  \\   /  /");
 
                     $myFleetSunk = true;
-                    foreach (self::$myFleet as $ship)
-                    {
+                    foreach (self::$myFleet as $ship) {
                         if (!$ship->isSunk()) {
                             $myFleetSunk = false;
                             break;
                         }
                     }
 
-                    if ($myFleetSunk)
-                    {
+                    if ($myFleetSunk) {
                         self::$console->println("\nYou lost!");
                         self::getSadEnding();
                         exit();
                     }
                 }
-            }
-            catch(Exception $exception) {
+            } catch (Exception $exception) {
                 self::$console->setForegroundColor(Color::RED);
                 self::$console->println($exception->getMessage());
                 self::$console->resetForegroundColor();
@@ -265,7 +277,7 @@ class App
         $letter = strtoupper(substr($input, 0, 1));
         $number = (int)filter_var($input, FILTER_SANITIZE_NUMBER_INT);
 
-        if(!is_numeric($number)) {
+        if (!is_numeric($number)) {
             throw new Exception("Not a number: $number");
         }
 
