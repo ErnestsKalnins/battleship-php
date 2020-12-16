@@ -124,29 +124,26 @@ class App
 
             for ($i = 1; $i <= $ship->getSize(); $i++) {
                 while (true) {
-                    if (count($ship->getPositions()) != 0) {
-                        printf("\nCurrent ship positions: %s", $ship->formatPositions());
-                    }
-                    printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
-                    $input = readline("");
-
-                    $inputPosition = new Position(
-                        substr($input, 0, 1),
-                        substr($input, 1, 1)
-                    );
-
-                    foreach (self::$myFleet as $validateShips) {
-                        if ($validateShips->hasPosition($inputPosition)) {
-                            printf("position %s is already assigned to a ship", $inputPosition);
-                            self::$console->println();
-                            continue 2;
-                        }
-                    }
-
                     try {
+                        if (count($ship->getPositions()) != 0) {
+                            printf("\nCurrent ship positions: %s", $ship->formatPositions());
+                        }
+                        printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
+                        $input = readline("");
+
+                        $inputPosition = self::parsePosition($input);
+
+                        foreach (self::$myFleet as $validateShips) {
+                            if ($validateShips->hasPosition($inputPosition)) {
+                                printf("position %s is already assigned to a ship", $inputPosition);
+                                self::$console->println();
+                                continue 2;
+                            }
+                        }
+
                         $ship->addPosition($inputPosition);
                         break;
-                    } catch (InvalidArgumentException $ex) {
+                    } catch (Exception $ex) {
                         printf($ex->getMessage());
                         self::$console->println();
                     }
