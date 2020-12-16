@@ -4,10 +4,18 @@ use Battleship\GameController;
 use Battleship\Position;
 use Battleship\Letter;
 use Battleship\Color;
+use Battleship\Ship;
 
 class App
 {
+    /**
+     * @var array|Ship[]
+     */
     private static $myFleet = array();
+
+    /**
+     * @var array|Ship[]
+     */
     private static $enemyFleet = array();
     private static $console;
 
@@ -119,7 +127,15 @@ class App
 
         while (true) {
             self::$console->println("");
-            self::$console->println("Player, it's your turn");
+            self::$console->println("Player, it's your turn!");
+            self::$console->println("");
+
+            self::$console->println("Enemy fleet status:");
+            foreach (self::$enemyFleet as $ship) {
+                self::$console->println($ship->printableStatus());
+            }
+
+            self::$console->println("");
             self::$console->println("Enter coordinates for your shot :");
             $position = readline("");
 
