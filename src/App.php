@@ -204,6 +204,7 @@ class App
                 if ($enemyFleetSunk)
                 {
                     self::$console->println("\nYou are the winner!");
+                    self::getHappyEnding();
                     exit();
                 }
 
@@ -238,6 +239,7 @@ class App
                     if ($myFleetSunk)
                     {
                         self::$console->println("\nYou lost!");
+                        self::getSadEnding();
                         exit();
                     }
                 }
@@ -276,34 +278,99 @@ class App
     /**
      * @param $matrix
      */
-    public static function drawMap($matrix, $color) {
+    public static function drawMap($matrix, $color)
+    {
         self::$console->setForegroundColor($color);
         self::$console->println();
-        self::$console->println(($color === Color::CHARTREUSE ? "Your" : "Enemy") .  " shoots");
+        self::$console->println(($color === Color::CHARTREUSE ? "Your" : "Enemy") . " shoots");
 
         printf("  ");
-        for($y = 1; $y <= self::$currentLines; $y++) {
+        for ($y = 1; $y <= self::$currentLines; $y++) {
             printf($y . ($y >= 10 ? "" : " "));
         }
         self::$console->println();
-        for($x = 1; $x <= self::$currentRows; $x++) {
-            $letter = Letter::$letters[$x-1];
+        for ($x = 1; $x <= self::$currentRows; $x++) {
+            $letter = Letter::$letters[$x - 1];
             printf($letter . " ");
-            for($y = 1; $y <= self::$currentLines; $y++) {
-                if(isset($matrix[$letter][$y])) {
-                    if($matrix[$letter][$y]) {
+            for ($y = 1; $y <= self::$currentLines; $y++) {
+                if (isset($matrix[$letter][$y])) {
+                    if ($matrix[$letter][$y]) {
                         printf("☑ ");
-                    }
-                    else {
+                    } else {
                         printf("☒ ");
                     }
-                }
-                else {
+                } else {
                     printf("☐ ");
                 }
             }
             self::$console->println();
         }
         self::$console->resetForegroundColor();
+    }
+
+    public static function getHappyEnding()
+    {
+        self::$console->println(' __      __         __                 _____       .__  .__   ');
+        self::$console->println('/  \    /  \_____ _/  |_  ____________/ ____\____  |  | |  |  ');
+        self::$console->println('\   \/\/   /\__  \\   __\/ __ \_  __ \   __\\__  \ |  | |  |  ');
+        self::$console->println(' \        /  / __ \|  | \  ___/|  | \/|  |   / __ \|  |_|  |__');
+        self::$console->println('  \__/\  /  (____  /__|  \___  >__|   |__|  (____  /____/____/');
+        self::$console->println('       \/        \/          \/                  \/           ');
+        self::$console->println('');
+        self::$console->println('');
+        self::$console->println('                  _.._');
+        self::$console->println('   _________....-~    ~-.______');
+        self::$console->println('~~~                            ~~~~-----...___________..--------');
+        self::$console->println('                                           |   |     |');
+        self::$console->println('                                           | |   |  ||');
+        self::$console->println('                                           |  |  |   |');
+        self::$console->println("                                           |'. .' .`.|");
+        self::$console->println("___________________________________________|0oOO0oO0o|____________");
+        self::$console->println(" -          -         -       -      -    / '  '. ` ` \    -    -");
+        self::$console->println("      --                  --       --   /    '  . `   ` \    --");
+        self::$console->println("---            ---          ---       /  '                \ ---");
+        self::$console->println("     ----               ----        /       ' ' .    ` `    \  ----");
+        self::$console->println("-----         -----         ----- /   '   '        `      `   \/");
+        self::$console->println("     .-~~-.          ------     /          '    . `     `    `  \/");
+        self::$console->println("    (_^..^_)-------           /  '    '      '      `");
+        self::$console->println("      ||||          --------/     '     '   '");
+    }
+
+    public static function getSadEnding()
+    {
+        self::$console->println('▓██   ██▓ ▒█████   █    ██     ██▓     ▒█████    ██████ ▄▄▄█████▓');
+        self::$console->println(' ▒██  ██▒▒██▒  ██▒ ██  ▓██▒   ▓██▒    ▒██▒  ██▒▒██    ▒ ▓  ██▒ ▓▒');
+        self::$console->println('  ▒██ ██░▒██░  ██▒▓██  ▒██░   ▒██░    ▒██░  ██▒░ ▓██▄   ▒ ▓██░ ▒░');
+        self::$console->println('  ░ ▐██▓░▒██   ██░▓▓█  ░██░   ▒██░    ▒██   ██░  ▒   ██▒░ ▓██▓ ░ ');
+        self::$console->println('  ░ ██▒▓░░ ████▓▒░▒▒█████▓    ░██████▒░ ████▓▒░▒██████▒▒  ▒██▒ ░ ');
+        self::$console->println('   ██▒▒▒ ░ ▒░▒░▒░ ░▒▓▒ ▒ ▒    ░ ▒░▓  ░░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░  ▒ ░░   ');
+        self::$console->println(' ▓██ ░▒░   ░ ▒ ▒░ ░░▒░ ░ ░    ░ ░ ▒  ░  ░ ▒ ▒░ ░ ░▒  ░ ░    ░    ');
+        self::$console->println(' ▒ ▒ ░░  ░ ░ ░ ▒   ░░░ ░ ░      ░ ░   ░ ░ ░ ▒  ░  ░  ░    ░      ');
+        self::$console->println(' ░ ░         ░ ░     ░            ░  ░    ░ ░        ░           ');
+        self::$console->println('');
+        self::$console->println('');
+        self::$console->println('       ________________                              _______________ ');
+        self::$console->println('      /                \                            / /           \ \ ');
+        self::$console->println('     / /          \ \   \                          |    -    -       \\');
+        self::$console->println('     |                  |                          | /        -   \  |');
+        self::$console->println('    /                  /                           \                 \\');
+        self::$console->println('   |      ___\ \| | / /                             \____________  \  \\');
+        self::$console->println('   |      /           |                             |            \    | ');
+        self::$console->println('   |      |     __    |                             |             \   \ ');
+        self::$console->println('  /       |       \   |                             |              \  | ');
+        self::$console->println('  |       |        \  |                             | ====          | |');
+        self::$console->println('  |       |       __  |                             | (o-)      _   | | ');
+        self::$console->println('  |      __\     (_o) |                             /            \  | |');
+        self::$console->println('  |     |             |     Heh Heh Heh            /            ) ) | |');
+        self::$console->println('   \    ||             \      /      Huh Huh Huh  /             ) / | | ');
+        self::$console->println('    |   |__             \    /                \  |___            - |  | ');
+        self::$console->println("    |   |           (*___\  /                  \    *'             |  | ");
+        self::$console->println("    |   |       _     |    /                    \  |____           |  |");
+        self::$console->println("    |   |    //_______|                             ####\          |  |");
+        self::$console->println("    |  /       |_|_|_|___/\                        ------          |_/  ");
+        self::$console->println("     \|       \ -         |                        |                | ");
+        self::$console->println("      |       _----_______/                        \_____           | ");
+        self::$console->println("      |      /                                          \           |");
+        self::$console->println("      |_____/                                            \__________|");
     }
 }
