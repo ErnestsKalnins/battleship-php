@@ -12,8 +12,10 @@ class App
     private static $console;
     private static $fieldMin = 5;
     private static $fieldMax = 26;
-    private static $currentWidth;
-    private static $currentHeight;
+    private static $currentLines;
+    private static $currentRows;
+    private static $player1ShootsMatrix = [];
+    private static $player2ShootsMatrix = []; // used for computer or second player
 
     static function run()
     {
@@ -67,13 +69,13 @@ class App
     }
 
     public static function getFieldSize() {
-        return [self::$currentWidth, self::$currentHeight];
+        return [self::$currentLines, self::$currentRows];
     }
 
     public static function getRandomPosition()
     {
-        $letter = Letter::value(random_int(0, self::$currentWidth - 1));
-        $number = random_int(0, self::$currentWidth - 1);
+        $letter = Letter::value(random_int(0, self::$currentRows - 1));
+        $number = random_int(0, self::$currentLines - 1);
 
         return new Position($letter, $number);
     }
@@ -84,28 +86,28 @@ class App
      */
     public static function InitializeFieldSize() {
         while(true) {
-            self::$console->println("Please enter the field width (min: " . self::$fieldMin . ", max: " . self::$fieldMax . "):");
+            self::$console->println("Please enter the field rows (min: " . self::$fieldMin . ", max: " . self::$fieldMax . "):");
             $input = (int)readline("");
             if($input < self::$fieldMin|| $input > self::$fieldMax) {
                 self::$console->setForegroundColor(Color::RED);
-                self::$console->println("Wrong field width");
+                self::$console->println("Wrong field rows");
                 self::$console->resetForegroundColor();
             }
             else {
-                self::$currentWidth = $input;
+                self::$currentRows = $input;
                 break;
             }
         }
         while(true) {
-            self::$console->println("Please enter the field height (min: " . self::$fieldMin . ", max: " . self::$fieldMax . "):");
+            self::$console->println("Please enter the field lines (min: " . self::$fieldMin . ", max: " . self::$fieldMax . "):");
             $input = (int)readline("");
             if($input < self::$fieldMin|| $input > self::$fieldMax) {
                 self::$console->setForegroundColor(Color::RED);
-                self::$console->println("Wrong field height");
+                self::$console->println("Wrong field lines");
                 self::$console->resetForegroundColor();
             }
             else {
-                self::$currentHeight = $input;
+                self::$currentLines = $input;
                 break;
             }
         }
@@ -114,7 +116,7 @@ class App
     public static function InitializeMyFleet()
     {
         self::$myFleet = GameController::initializeShips();
-        self::$console->println("Please position your fleet (Game board has size from A to " . Letter::$letters[self::$currentWidth - 1] . " and 1 to " . self::$currentHeight . ") :");
+        self::$console->println("Please position your fleet (Game board has size from A to " . Letter::$letters[self::$currentLines - 1] . " and 1 to " . self::$currentRows . ") :");
 
         foreach (self::$myFleet as $ship) {
 
@@ -132,6 +134,10 @@ class App
     public static function beep()
     {
         echo "\007";
+    }
+
+    public static function clearScreen() {
+        print("\033[2J\033[;H");
     }
 
     public static function InitializeGame()
@@ -162,6 +168,7 @@ class App
             $position = readline("");
 
             try {
+                self::clearScreen();
                 $parsedPosition = self::parsePosition($position);
 
                 $isHit = GameController::checkIsHit(self::$enemyFleet, $parsedPosition);
@@ -178,6 +185,10 @@ class App
                 }
 
                 echo $isHit ? "Yeah ! Nice hit !" : "Miss";
+
+                self::$player1ShootsMatrix[$parsedPosition->getColumn()][$parsedPosition->getRow()] = $isHit;
+                self::drawMap(self::$player1ShootsMatrix, Color::CHARTREUSE);
+
                 self::$console->println();
 
 
@@ -198,6 +209,9 @@ class App
 
                 $position = self::getRandomPosition();
                 $isHit = GameController::checkIsHit(self::$myFleet, $position);
+
+                self::$player2ShootsMatrix[$position->getColumn()][$position->getRow()] = $isHit;
+                self::drawMap(self::$player2ShootsMatrix, Color::YELLOW);
                 self::$console->println();
                 printf("Computer shoot in %s%s and %s", $position->getColumn(), $position->getRow(), $isHit ? "hit your ship !\n" : "miss");
                 if ($isHit) {
@@ -245,17 +259,51 @@ class App
             throw new Exception("Not a number: $number");
         }
 
-        if($number < 1 || $number > self::$currentWidth) {
-            throw new Exception("Out of a game field. Your number: $number, maximum number: " . self::$currentWidth);
+        if($number < 1 || $number > self::$currentLines) {
+            throw new Exception("Out of a game field. Your number: $number, maximum number: " . self::$currentLines);
         }
 
         if(!in_array($letter, Letter::$letters)) {
             throw new Exception("Letter not exist: $letter");
         }
 
-        if(array_search($letter, Letter::$letters) >= self::$currentHeight ) {
-            throw new Exception("Out of a game field. Your letter: $letter, maximum letter: " . Letter::$letters[self::$currentHeight-1]);
+        if(array_search($letter, Letter::$letters) >= self::$currentRows ) {
+            throw new Exception("Out of a game field. Your letter: $letter, maximum letter: " . Letter::$letters[self::$currentRows-1]);
         }
         return new Position($letter, $number);
+    }
+
+    /**
+     * @param $matrix
+     */
+    public static function drawMap($matrix, $color) {
+        self::$console->setForegroundColor($color);
+        self::$console->println();
+        self::$console->println(($color === Color::CHARTREUSE ? "Your" : "Enemy") .  " shoots");
+
+        printf("  ");
+        for($y = 1; $y <= self::$currentLines; $y++) {
+            printf($y . ($y >= 10 ? "" : " "));
+        }
+        self::$console->println();
+        for($x = 1; $x <= self::$currentRows; $x++) {
+            $letter = Letter::$letters[$x-1];
+            printf($letter . " ");
+            for($y = 1; $y <= self::$currentLines; $y++) {
+                if(isset($matrix[$letter][$y])) {
+                    if($matrix[$letter][$y]) {
+                        printf("☑ ");
+                    }
+                    else {
+                        printf("☒ ");
+                    }
+                }
+                else {
+                    printf("☐ ");
+                }
+            }
+            self::$console->println();
+        }
+        self::$console->resetForegroundColor();
     }
 }
