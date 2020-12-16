@@ -2,6 +2,8 @@
 
 namespace Battleship;
 
+use InvalidArgumentException;
+
 class Ship
 {
 
@@ -46,12 +48,28 @@ class Ship
         $letter = substr($input, 0, 1);
         $number = substr($input, 1, 1);
 
-        array_push($this->positions, new Position($letter, $number));
+        $inputPosition = new Position($letter, $number);
+
+        if ($this->hasPosition($inputPosition)) {
+            throw new InvalidArgumentException(sprintf("position %s already belongs to the ship", $inputPosition));
+        }
+
+        array_push($this->positions, $inputPosition);
     }
 
     public function &getPositions()
     {
         return $this->positions;
+    }
+
+    public function hasPosition($position) : bool
+    {
+        foreach ($this->positions as $shipPosition) {
+            if ($position == $shipPosition) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function setSize($size)

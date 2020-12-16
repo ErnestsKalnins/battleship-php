@@ -125,8 +125,16 @@ class App
 
             for ($i = 1; $i <= $ship->getSize(); $i++) {
                 printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
-                $input = readline("");
-                $ship->addPosition($input);
+                while (true) {
+                    $input = readline("");
+                    try {
+                        $ship->addPosition($input);
+                        break;
+                    } catch (InvalidArgumentException $ex) {
+                        printf($ex->getMessage());
+                        self::$console->println();
+                    }
+                }
             }
         }
     }
