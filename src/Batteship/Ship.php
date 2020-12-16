@@ -2,13 +2,15 @@
 
 namespace Battleship;
 
+use InvalidArgumentException;
+
 class Ship
 {
 
     private $name;
     private $size;
     private $color;
-    private $positions = array();
+    private $positions = [];
 
     public function __construct($name, $size, $color = null)
     {
@@ -41,17 +43,54 @@ class Ship
         return $this->color;
     }
 
-    public function addPosition($input)
+    public function addPosition($position)
     {
-        $letter = substr($input, 0, 1);
-        $number = substr($input, 1, 1);
+        if ($this->hasPosition($position)) {
+            throw new InvalidArgumentException(sprintf("position %s already belongs to the ship", $position));
+        }
 
-        array_push($this->positions, new Position($letter, $number));
+        if (!$this->isPositionValid($position)) {
+            throw new InvalidArgumentException(sprintf("position %s is not valid", $position));
+        }
+
+        array_push($this->positions, $position);
     }
 
     public function &getPositions()
     {
         return $this->positions;
+    }
+
+    public function hasPosition($position): bool
+    {
+        foreach ($this->positions as $shipPosition) {
+            if ($position == $shipPosition) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isPositionValid($position): bool
+    {
+        if (count($this->positions) == 0) {
+            return true;
+        }
+
+        $isAdjacent = false;
+        $isAligned = true;
+        foreach ($this->positions as $shipPosition) {
+            if (!$shipPosition->isAlignedTo($position)) {
+                return false;
+            }
+
+            if ($shipPosition->isAdjacentTo($position)) {
+                $isAdjacent = true;
+            }
+        }
+
+        return $isAdjacent && $isAligned;
     }
 
     public function setSize($size)
@@ -64,6 +103,7 @@ class Ship
         foreach ($this->positions as $position) {
             if ($position == $shot) {
                 $position->hit();
+
                 return;
             }
         }
@@ -76,6 +116,7 @@ class Ship
                 return false;
             }
         }
+
         return true;
     }
 
@@ -90,5 +131,9 @@ class Ship
         }
 
         return $start .= $end;
+    }
+    public function formatPositions()
+    {
+        return implode($this->positions, " ");
     }
 }
