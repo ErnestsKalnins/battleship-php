@@ -124,6 +124,9 @@ class App
 
             for ($i = 1; $i <= $ship->getSize(); $i++) {
                 while (true) {
+                    if (count($ship->getPositions()) != 0) {
+                        printf("\nCurrent ship positions: %s", $ship->formatPositions());
+                    }
                     printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
                     $input = readline("");
 

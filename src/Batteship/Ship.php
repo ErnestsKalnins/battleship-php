@@ -119,4 +119,9 @@ class Ship
 
         return true;
     }
+
+    public function formatPositions()
+    {
+        return implode($this->positions, " ");
+    }
 }
