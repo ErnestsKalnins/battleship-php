@@ -120,6 +120,18 @@ class Ship
         return true;
     }
 
+    public function printableStatus()
+    {
+        $start = $this->isSunk() ? "Sunk:" : "Alive:" . " [";
+        $end = "]";
+        $middle = "=";
+
+        foreach ($this->getPositions() as $position) {
+            $start .= $middle;
+        }
+
+        return $start .= $end;
+    }
     public function formatPositions()
     {
         return implode($this->positions, " ");
