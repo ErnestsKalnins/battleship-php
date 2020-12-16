@@ -124,8 +124,8 @@ class App
             printf("Please enter the positions for the %s (size: %s)", $ship->getName(), $ship->getSize());
 
             for ($i = 1; $i <= $ship->getSize(); $i++) {
-                printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
                 while (true) {
+                    printf("\nEnter position %s of %s (i.e A3):", $i, $ship->getSize());
                     $input = readline("");
                     try {
                         $ship->addPosition($input);

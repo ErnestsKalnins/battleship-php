@@ -13,6 +13,7 @@ class Position
 
     /**
      * Position constructor.
+     *
      * @param string $letter
      * @param string $number
      */
@@ -46,5 +47,16 @@ class Position
     public function hit()
     {
         $this->isHit = true;
+    }
+
+    public function isAlignedTo($position): bool
+    {
+        return $this->row == $position->row ||
+            $this->column == $position->column;
+    }
+
+    public function isAdjacentTo($position): bool
+    {
+        return abs($this->row - $position->row) + abs(ord($this->column) - ord($position->column)) == 1;
     }
 }
