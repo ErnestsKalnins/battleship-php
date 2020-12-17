@@ -321,7 +321,7 @@ class App
         self::$console->println(($color === Color::CHARTREUSE ? "Your" : "Enemy") . " shoots");
 
         printf("  ");
-        for ($y = 1; $y <= self::$currentLines; $y++) {
+        for ($y = 1; $y <= self::$currentLines; $y++) {                        
             printf($y . ($y >= 10 ? "" : " "));
         }
         self::$console->println();
